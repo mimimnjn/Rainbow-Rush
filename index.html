@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>레인보우 러쉬 - 산-염기 지시약 화학 게임</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 사이드바 네비게이션 -->
+    <aside class="sidebar">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 3h12M8 3v5l-4 9a2 2 0 002 3h12a2 2 0 002-3l-4-9V3M6 14h12" />
+        </svg>
+        <span class="brand-name">레인보우 러쉬</span>
+      </div>
+      <nav class="nav-links">
+        <div class="nav-item active" id="nav-game">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M21 12H3M12 3v18" />
+          </svg>
+          <span>게임 플레이</span>
+        </div>
+        <div class="nav-item" id="nav-rules-btn">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4M12 8h.01" />
+          </svg>
+          <span>지시약 도표</span>
+        </div>
+        <div class="nav-item" id="nav-leaderboard-btn">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+          <span>리더보드</span>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="main-content">
+      <!-- 상단 헤더 -->
+      <header class="top-header">
+        <div class="header-left">
+          <h1>레인보우 러쉬</h1>
+        </div>
+        <div class="header-right">
+          <button class="btn btn-secondary" id="rules-toggle-btn">도표 보기</button>
+        </div>
+      </header>
+
+      <div class="content-wrapper">
+        <!-- 시작 화면 -->
+        <section id="start-screen" class="game-screen active">
+          <div class="hero-card">
+            <div class="flask-icon-wrapper">
+              <svg class="beaker-svg animated-flask" viewBox="0 0 100 120" width="80" height="96">
+                <!-- 무지개 그라데이션 정의 -->
+                <defs>
+                  <linearGradient id="rainbow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ff0055" />
+                    <stop offset="20%" stop-color="#ff9900" />
+                    <stop offset="40%" stop-color="#4ade80" />
+                    <stop offset="60%" stop-color="#3b82f6" />
+                    <stop offset="80%" stop-color="#8b5cf6" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+                </defs>
+                <path d="M25 70 L17 103 Q 15 113 25 113 L75 113 Q 85 113 83 103 L75 70 Z" fill="url(#rainbow-grad)" />
+                <path d="M35 15 L35 35 L15 105 Q 13 115 25 115 L75 115 Q 87 115 85 105 L65 35 L65 15 Z" fill="none" stroke="#9ca3af" stroke-width="6" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h2 class="hero-title">레인보우 러쉬</h2>
+            <p class="hero-desc" style="white-space: pre-line;">지시약과 pH를 조절해 목표 색상을 만들어보세요.
+제한 시간 안에 정답을 찾아 점수를 획득하고 최고 기록에 도전하세요.
+단, 글자의 의미와 실제 색상이 다를 수 있으니 주의하세요.</p>
+            <button class="btn btn-primary btn-large" id="start-game-btn">게임 시작</button>
+          </div>
+
+          <div class="indicator-info-grid">
+            <div class="info-card">
+              <h3>목표 색상</h3>
+              <p>스타일링된 글자 색상이 당신을 속일 것입니다. 화면에 노란색 글씨로 "파랑"이라고 적혀있다면, 글자 자체의 의미인 파랑색을 만들어야 합니다.</p>
+            </div>
+            <div class="info-card">
+              <h3>순환하는 지시약</h3>
+              <p>매 라운드마다 4개의 무작위 지시약이 선택지로 제공됩니다. 정답을 만들 수 있는 알맞은 지시약을 찾아 pH를 슬라이더로 조절하세요.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 플레이 화면 -->
+        <section id="play-screen" class="game-screen">
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-label">점수</span>
+              <span class="stat-value" id="score-val">000000</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">콤보</span>
+              <span class="stat-value text-accent" id="combo-val">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">남은 기회</span>
+              <div class="lives-container" id="lives-box">
+                <!-- JS에서 생성됨 -->
+              </div>
+            </div>
+          </div>
+
+          <!-- 타이머 영역 -->
+          <div class="timer-section">
+            <div class="timer-labels">
+              <span class="timer-title" id="difficulty-text">제한 시간: 15초</span>
+              <span class="timer-number" id="timer-text">15.0초</span>
+            </div>
+            <div class="timer-bar-container">
+              <div class="timer-bar" id="timer-progress"></div>
+            </div>
+          </div>
+
+          <!-- 분할 배치 Layout -->
+          <div class="workspace-layout">
+            <!-- 좌측: 목표 색상 & 비커 미리보기 -->
+            <div class="visualizer-panel">
+              <div class="target-card">
+                <span class="target-subtitle">만들어야 할 색상</span>
+                <div class="target-display" id="target-text">빨강</div>
+              </div>
+              
+              <!-- 대형 비커 미리보기 영역 -->
+              <div class="beaker-preview-card">
+                <span class="preview-label">혼합액 미리보기</span>
+                <div class="beaker-wrapper">
+                  <svg class="beaker-svg-large" viewBox="0 0 100 120">
+                    <!-- 용액 경로 -->
+                    <path class="beaker-liquid-large" id="beaker-liquid" d="M25 70 L17 103 Q 15 113 25 113 L75 113 Q 85 113 83 103 L75 70 Z" fill="#e2e8f0" />
+                    <!-- 유리관 외곽선 -->
+                    <path d="M35 15 L35 35 L15 105 Q 13 115 25 115 L75 115 Q 87 115 85 105 L65 35 L65 15 Z" fill="none" stroke="#9ca3af" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" />
+                    <!-- 눈금선 -->
+                    <line x1="38" y1="95" x2="48" y2="95" stroke="#9ca3af" stroke-width="2" />
+                    <line x1="42" y1="80" x2="48" y2="80" stroke="#9ca3af" stroke-width="2" />
+                    <line x1="45" y1="65" x2="48" y2="65" stroke="#9ca3af" stroke-width="2" />
+                    <line x1="48" y1="50" x2="52" y2="50" stroke="#9ca3af" stroke-width="2" />
+                    <!-- 기포 -->
+                    <circle cx="35" cy="85" r="2.5" fill="#ffffff" opacity="0.8" class="bubble" />
+                    <circle cx="65" cy="95" r="3.5" fill="#ffffff" opacity="0.7" class="bubble" />
+                    <circle cx="50" cy="75" r="2" fill="#ffffff" opacity="0.9" class="bubble" />
+                  </svg>
+                </div>
+                <div class="preview-status" id="feedback-status">지시약과 pH를 선택하세요</div>
+              </div>
+            </div>
+
+            <!-- 우측: 컨트롤러 -->
+            <div class="controls-card">
+              <div class="control-section">
+                <label class="control-label">1. 지시약 선택 (라운드별 4개 노출)</label>
+                <div class="indicator-grid" id="indicator-buttons">
+                  <!-- JS에서 동적 바인딩 -->
+                </div>
+              </div>
+
+              <div class="control-section">
+                <div class="slider-header">
+                  <label class="control-label">2. pH 농도 조절</label>
+                  <span class="ph-display" id="ph-val-display">7.0</span>
+                </div>
+                <input type="range" min="1" max="14" step="0.1" value="7.0" class="ph-slider" id="ph-input">
+                <div class="ph-scale-labels">
+                  <span>1 (산성)</span>
+                  <span>7 (중성)</span>
+                  <span>14 (염기성)</span>
+                </div>
+              </div>
+
+              <div class="action-section">
+                <button class="btn btn-primary btn-large btn-full" id="submit-btn">화학 반응 제출</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 게임 오버 화면 -->
+        <section id="game-over-screen" class="game-screen">
+          <div class="hero-card end-card">
+            <h2 class="hero-title text-negative">게임 오버</h2>
+            <div class="results-grid">
+              <div class="result-box">
+                <span class="result-label">최종 점수</span>
+                <span class="result-value" id="final-score">0</span>
+              </div>
+              <div class="result-box">
+                <span class="result-label">최대 콤보</span>
+                <span class="result-value text-accent" id="max-combo">0</span>
+              </div>
+            </div>
+
+            <!-- 점수 제출 세션 -->
+            <div class="score-submit-container" id="score-submit-box">
+              <div class="score-inputs-row">
+                <input type="text" id="nickname-input" placeholder="닉네임 입력 (10자 이내)" maxlength="10" class="nickname-input-field">
+                <input type="password" id="password-input" placeholder="비밀번호 설정" class="nickname-input-field" style="max-width: 140px;">
+              </div>
+              <button class="btn btn-primary btn-full" id="submit-score-btn">랭킹 등록하기</button>
+            </div>
+
+            <!-- 랭킹 TOP 10 디스플레이 영역 -->
+            <div class="ranking-panel">
+              <h3 class="ranking-panel-title">실시간 TOP 10 랭킹</h3>
+              <div class="ranking-list" id="leaderboard-list">
+                <div style="text-align: center; padding: 20px; color: var(--text-silver);">랭킹 로드 중...</div>
+              </div>
+            </div>
+
+            <button class="btn btn-secondary btn-large btn-full" id="restart-game-btn">다시 도전</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- 화학 지시약 안내 모달 -->
+  <div class="modal-overlay" id="rules-modal">
+    <div class="modal-content rules-modal-content">
+      <div class="modal-header">
+        <h2>지시약 변색 카드첩</h2>
+        <button class="modal-close-btn" id="close-modal-btn">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body rules-modal-body">
+        <div class="indicator-cards-grid" id="indicator-cards-container">
+          <!-- JS에서 카드들이 동적 생성됨 -->
+        </div>
+        <div class="modal-tip">
+          <strong>지시약 조합 팁:</strong> 카드 하단의 그라데이션 선은 pH 1부터 14까지 변하는 실제 색상 변화를 묘사합니다. 변색 구역을 파악하면 정답 추론이 쉬워집니다!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 리더보드 조회 모달 -->
+  <div class="modal-overlay" id="leaderboard-modal">
+    <div class="modal-content ranking-modal-content">
+      <div class="modal-header">
+        <h2>실시간 TOP 10 랭킹</h2>
+        <button class="modal-close-btn" id="close-leaderboard-modal-btn">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="ranking-list" id="modal-leaderboard-list">
+          <div style="text-align: center; padding: 20px; color: var(--text-silver);">랭킹 로드 중...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 인앱 커스텀 토스트 알림창 -->
+  <div id="toast-notification" class="toast-notification">지시약을 선택해주세요!</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
